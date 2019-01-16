@@ -4,10 +4,12 @@ CLIENT=$(CURR_PATH)/client
 DATAPOOL=$(CURR_PATH)/data_pool
 LIB=$(CURR_PATH)/lib
 COMM=$(CURR_PATH)/comm
+WINDOW=$(CURR_PATH)/window
+
 
 LD_FLAGS=-lpthread -ljsoncpp
 
-INCLUDE=-I$(DATAPOOL) -I$(LIB)/include
+INCLUDE=-I$(DATAPOOL) -I$(LIB)/include -I$(COMM) -I$(WINDOW)
 #-I告诉编译器在也在这个路径下找一下
 LIB_PATH=-L$(LIB)/lib
 
@@ -17,7 +19,7 @@ ser_bin=chatServer
 cli_bin=chatClient
 
 ser_obj=$(shell ls $(SERVER)/*.cpp $(DATAPOOL)/*.cpp $(COMM)/*.cpp | sed -e 's/\/.*\///' -e 's/\.cpp/\.o/')
-cli_obj=$(shell ls $(CLIENT)/*.cpp $(COMM)/*.cpp | sed -e 's/\/.*\///' -e 's/\.cpp/\.o/')
+cli_obj=$(shell ls $(CLIENT)/*.cpp $(COMM)/*.cpp $(WINDOW)/*.cpp| sed -e 's/\/.*\///' -e 's/\.cpp/\.o/')
 
 #去掉sed -e 's/\/.*\///' -e 's/.cc/.o'(正则表达式) nodir内置函数也可以去掉路径
 
@@ -27,15 +29,17 @@ all:$(ser_bin) $(cli_bin)
 $(ser_bin):$(ser_obj)
 	$(cc) -o $@ $^ $(LIB_PATH) $(LD_FLAGS)
 $(cli_bin):$(cli_obj)
-	$(cc) -o $@ $^ $(LIB_PATH) $(LD_FLAGS)
+	$(cc) -o $@ $^ $(LIB_PATH) $(LD_FLAGS) -lncurses -static
 %.o:$(SERVER)/%.cpp 
 	$(cc) -c $<  $(INCLUDE)      
 #%类似通配符,把依赖关系中的cc分别编译
 %.o:$(CLIENT)/%.cpp
-	$(cc) -c $<       
+	$(cc) -c $<  $(INCLUDE)      
 %.o:$(DATAPOOL)/%.cpp
 	$(cc) -c $<       
 %.o:$(COMM)/%.cpp 
+	$(cc) -c $< $(INCLUDE) 
+%.o:$(WINDOW)/%.cpp 
 	$(cc) -c $< $(INCLUDE) 
 
 .PHONY:clean

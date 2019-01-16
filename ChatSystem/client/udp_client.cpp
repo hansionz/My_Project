@@ -1,6 +1,5 @@
 #include "udp_client.h"
 
-
   UdpClient::UdpClient(std::string server_ip, uint16_t server_port)
   {
     server_addr.sin_family = AF_INET;
@@ -42,3 +41,4 @@
   {
     close(sock);
   }
+

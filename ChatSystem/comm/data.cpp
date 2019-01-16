@@ -39,17 +39,17 @@ Data::~Data()
 
 }
 
-//int main()
-//{
-//  Data d;
-//  d.nick_name = "控心";
-//  d.school = "XSUT";
-//  d.message = "你们好";
-//  d.type = "None";
-//
-//  std::string out_string;
-//  d.Serialize(out_string);
-//
-//  std::cout << out_string << std::endl;
-//  return 0;
-//}
+int main()
+{
+  Data d;
+  d.nick_name = "控心";
+  d.school = "XSUT";
+  d.message = "你们好";
+  d.type = "None";
+
+  std::string out_string;
+  d.Serialize(out_string);
+
+  std::cout << out_string << std::endl;
+  return 0;
+}

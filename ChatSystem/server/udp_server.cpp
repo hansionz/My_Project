@@ -1,4 +1,5 @@
 #include "udp_server.h"
+#include "Data.h"
 
 
 UdpServer::UdpServer(uint16_t _port)
@@ -42,7 +43,16 @@ UdpServer::UdpServer(uint16_t _port)
       buf[rs] = 0;
       out_string = buf;
       pool.PutMess(out_string);
-      online.insert(std::pair<uint32_t, struct sockaddr_in>(peer.sin_addr.s_addr, peer));
+      Data d;
+      d.Unserialize(out_string);
+      if(d.type == "quit"){
+        std::map<uint32_t, struct sockaddr_in>::iterator it = online.find(peer.sin_addr.s_addr);
+        if(it != online.end()){
+          online.erase(it->first);//key值
+        }
+      }else{
+        online.insert(std::pair<uint32_t, struct sockaddr_in>(peer.sin_addr.s_addr, peer));
+      }
     }
     std::cout << "接收成功" << std::endl;
   }
