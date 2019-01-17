@@ -2,7 +2,9 @@
 
 #include <iostream>
 #include <string>
-#include <json/json.h>
+#include <value.h>
+#include <write.h>
+#include <read.h>
 
 // nick_name("zs") , school("XUST"), message("hello"), type("none") 
 // json串:"{nick_name:"zs",school:"XUST",message:"hello",type:"None"}" 

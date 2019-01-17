@@ -1,15 +1,13 @@
 #include "data.h"
 
 Data::Data()
-{
+{}
 
-}
-
-//jsoncpp
+//jsonlib
 //序列化
 void Data::Serialize(std::string &out_string)
 {
-  Json::Value root;
+  ValueObj root;
   root["nick_name"] = nick_name;
   root["school"] = school;
   root["message"] = message;
@@ -17,16 +15,16 @@ void Data::Serialize(std::string &out_string)
 
   //序列化
   //StyledWriter
-  Json::FastWriter w;
-  out_string = w.write(root);
+  Write w;
+  w.run(root, out_string);
 }
 
 //反序列化
 void Data::Unserialize(std::string &in_string)
 {
-  Json::Value root;
-  Json::Reader r;
-  r.parse(in_string, root, false);
+  ValueObj root;
+  Read r;
+  r.run(in_string, root);
 
   nick_name = root["nick_name"].asString();
   school = root["school"].asString();
