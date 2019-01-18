@@ -23,18 +23,21 @@ WINDOW* Window::GetOnline()
   return online;
 }
 
+//向矩形框中放入数据
 void Window::PutWindow(WINDOW *w, int y, int x,std::string& message)
 {
   //将光标移至矩形框并向该矩形框写入字符串
   mvwaddstr(w, y, x, message.c_str());
   wrefresh(w);//刷新边框
 }
+//从矩形框中获得数据
 void Window::GetWindow(WINDOW *w, std::string &out_string)
 {
   char buf[SIZE];
   wgetnstr(w, buf, SIZE);
   out_string = buf;
 }
+
 void Window::DrawHeader()
 {
   int y = 0;
@@ -89,9 +92,9 @@ Window::~Window()
   endwin();
 }
 
-int main()
-{
-  Window w;
+//int main()
+//{
+  //Window w;
   //w.DrawHeader();
   //w.DrawOutput();
   //w.DrawOnline();
@@ -124,6 +127,6 @@ int main()
   //    i--;
   //  usleep(100000);
   //}
-  sleep(3);
-  return 0;
-}
+  //sleep(3);
+  //return 0;
+//}

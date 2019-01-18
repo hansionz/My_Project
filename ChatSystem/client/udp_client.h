@@ -11,8 +11,6 @@
 
 #define SIZE 1024 //发送信息的最大长度
 
-//https和http的区别是在传输层和网络层之间加了ssl(加密层)
-//然后在对方的同层进行解密
 class UdpClient
 {
 public:

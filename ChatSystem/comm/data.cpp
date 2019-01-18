@@ -26,10 +26,10 @@ void Data::Unserialize(std::string &in_string)
   Read r;
   r.run(in_string, root);
 
-  nick_name = root["nick_name"].asString();
-  school = root["school"].asString();
-  message = root["message"].asString();
-  type = root["type"].asString();
+  nick_name = root["nick_name"].getstring();
+  school = root["school"].getstring();
+  message = root["message"].getstring();
+  type = root["type"].getstring();
 }
 
 Data::~Data()
@@ -37,17 +37,23 @@ Data::~Data()
 
 }
 
-int main()
-{
-  Data d;
-  d.nick_name = "控心";
-  d.school = "XSUT";
-  d.message = "你们好";
-  d.type = "None";
-
-  std::string out_string;
-  d.Serialize(out_string);
-
-  std::cout << out_string << std::endl;
-  return 0;
-}
+//int main()
+//{
+//  Data d;
+//  d.nick_name = "控心";
+//  d.school = "XSUT";
+//  d.message = "你们好";
+//  d.type = "None";
+//
+//  std::string out_string;
+//  d.Serialize(out_string);
+//
+//  std::cout << out_string << std::endl;
+//
+//  Data d1;
+//  d1.Unserialize(out_string);
+//  std::cout << d1.nick_name << std::endl;
+//  std::cout << d1.school << std::endl;
+//
+//  return 0;
+//}

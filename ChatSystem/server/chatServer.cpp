@@ -6,6 +6,7 @@ void* RecvMess(void *arg)
   std::string message;
   while(1)
   {
+    //RecvData中负责将数据放到数据池中
     us->RecvData(message);
     std::cout << "test:" << message << std::endl;
   }
@@ -26,12 +27,13 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  UdpServer server(atoi(argv[1]));
+  UdpServer server(atoi(argv[1]));//argv[1]是字符串，要转换为整型
   server.InitServer();
+
   pthread_t r, s;
-  //收数据线程
+  //从客户端接收到数据,并且放到数据池(环形队列)中
   pthread_create(&r, NULL, RecvMess, (void*)&server);
-  //从环形队列获取数据，并转发给其他人的线程
+  //从环形队列获取数据，并转发给服务器维护的在线列表中
   pthread_create(&s, NULL, SendMess, (void*)&server);
 
   pthread_join(r, NULL);

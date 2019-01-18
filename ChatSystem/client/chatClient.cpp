@@ -1,25 +1,26 @@
 #include "udp_client.h"
 #include "window.h"
-#include "Data.h"
+#include "data.h"
 #include <signal.h>
 #include <pthread.h>
 #include <vector>
 
-volatile int is_quit = 0;
+volatile int is_quit = 0;//退出标志位
 
 typedef struct{
   UdpClient *clientp;
-  Window *winp;
+  Window *winp;//窗口程序
   std::string nick_name;
   std::string school;
 }client_info_t;
 
-client_info_t cw;
-std::vector<std::string> online;
+client_info_t cw;//客户端信息 nick_name-scholl:message
+
+std::vector<std::string> online;//客户端展示的在线列表
+
 static void AddUser(std::string &f)
 {
-  //好友列表不能重复
-  //先查找，如果没有在插入
+  //在线好友列表不能重复.先查找如果没有在插入
   std::vector<std::string>::iterator it = online.begin();
   for(; it != online.end() ; it++)
   {
@@ -32,7 +33,7 @@ static void AddUser(std::string &f)
 
 static void DelUser(std::string &f)
 {
-  //先查找，如果没有在删除
+  //先查找如果存在则删除
   std::vector<std::string>::iterator it = online.begin();
   for(; it != online.end() ; it++)
   {
@@ -40,28 +41,31 @@ static void DelUser(std::string &f)
       online.erase(it);
     }
   }
-  online.push_back(f);
 }
+
+//标题窗口绘制线程
 void *RunHeader(void* arg)
 {
   client_info_t *cwp = (client_info_t*)arg;
   Window *wp = cwp->winp;
   wp->DrawHeader();
-  std::string title = "Welcome To My Chat Room";
+  std::string title = "Welcome To My ChatRoom";
+
+  //绘制标题动态效果
   size_t i = 1;
-  int y,x;
+  int y,x;//y:行 x:列
   int dir = 0;
   while(1)
   {
-    //行不变，列在变，重新刷新，可以完成移动功能
+    //行不变，列在变，重新刷新，可以完成左右移动功能
     wp->DrawHeader();
-    getmaxyx(wp->GetHeader(), y, x);//获得窗口的高和宽
+    getmaxyx(wp->GetHeader(), y, x);//获得该窗口的行和列
     wp->PutWindow(wp->GetHeader(), y/2, i, title);
     if(i >= x - title.size() - 3)
     {
-      dir = 1;//left<-right
+      dir = 1;//right->left
     }
-    if( i <= 4)
+    if(i <= 4)
     {
       dir = 0;//left->right
     }
@@ -72,6 +76,8 @@ void *RunHeader(void* arg)
     usleep(100000);
   }
 }
+
+//输入窗口绘制线程
 void *RunInput(void* arg)
 {
   client_info_t *cwp = (client_info_t*)arg;
@@ -95,13 +101,13 @@ void *RunInput(void* arg)
     d.message = str;
     d.Serialize(out_string);
 
-    cp->SendData(out_string);
+    cp->SendData(out_string);//->server
 
-    wp->DrawInput();//->server
+    wp->DrawInput();
   }
-  //output->data()
-  //std::string message = "for test";
 }
+
+//输出和在线列表绘制线程
 void *RunOutputOnline(void* arg)
 {
   client_info_t *cwp = (client_info_t*)arg;
@@ -110,6 +116,7 @@ void *RunOutputOnline(void* arg)
 
   wp->DrawOutput();
   wp->DrawOnline();
+
   int y,x;
   int i = 1;
   std::string out_string;//json
@@ -117,20 +124,26 @@ void *RunOutputOnline(void* arg)
   Data d;
   while(1){
     cp->RecvData(out_string);
+    //将收到的数据反序列化打印到Output上
     d.Unserialize(out_string);
     //zs-xust message 
     show_string = d.nick_name;
     show_string += "-";
     show_string += d.school;
 
-    if(d.type == "quit"){
+    if(d.type == "quit")
+    {
       DelUser(show_string);
-    }else{
+    }
+    else
+    {
       AddUser(show_string);
-      show_string += "#";
+      show_string += ": ";
       show_string += d.message;
 
-      if(i > y -2){
+      //避免超出矩形框
+      if(i > y -2)
+      {
         i = 1;
         wp->DrawOutput();
       }
@@ -138,8 +151,7 @@ void *RunOutputOnline(void* arg)
       //y change x no change
       
       wp->PutWindow(wp->GetOutput(), i++, 2, show_string);
-  }
-    //sleep(1);
+    }
     //online
     wp->DrawOnline();
     size_t j = 0;
@@ -164,6 +176,7 @@ void SendQuit(int sig)
   cw.clientp->SendData(out_string);
   is_quit = 1;
 }
+
 int main(int argc, char* argv[])
 {
   if(argc != 3)
@@ -178,6 +191,7 @@ int main(int argc, char* argv[])
   std::cin >> cw.school;
 
   signal(SIGINT, SendQuit);
+
   UdpClient client(argv[1], atoi(argv[2]));
   client.InitClient();
 
@@ -193,13 +207,14 @@ int main(int argc, char* argv[])
   while(!is_quit){
     sleep(1);
   }
+
   //取消线程
   pthread_cancel(header);
   pthread_cancel(output_online);
   pthread_cancel(input);
-  pthread_join(header, NULL);
-  pthread_join(output_online, NULL);
-  pthread_join(input, NULL);
+  //pthread_join(header, NULL);
+  //pthread_join(output_online, NULL);
+  //pthread_join(input, NULL);
  // std::string message;
  // while(1)
  // {
@@ -207,5 +222,5 @@ int main(int argc, char* argv[])
  //   std::cin >> message;
  //   client.SendData(message);
  // }
- // return 0;
+  return 0;
 }

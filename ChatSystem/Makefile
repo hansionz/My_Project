@@ -6,12 +6,10 @@ LIB=$(CURR_PATH)/lib
 COMM=$(CURR_PATH)/comm
 WINDOW=$(CURR_PATH)/window
 
-
 LD_FLAGS=-lpthread -ljsoncpp
+LIB_PATH=-L$(LIB)/lib
 
 INCLUDE=-I$(DATAPOOL) -I$(LIB)/include -I$(COMM) -I$(WINDOW)
-#-I告诉编译器在也在这个路径下找一下
-LIB_PATH=-L$(LIB)/lib
 
 cc=g++
 
@@ -29,14 +27,14 @@ all:$(ser_bin) $(cli_bin)
 $(ser_bin):$(ser_obj)
 	$(cc) -o $@ $^ $(LIB_PATH) $(LD_FLAGS)
 $(cli_bin):$(cli_obj)
-	$(cc) -o $@ $^ $(LIB_PATH) $(LD_FLAGS) -lncurses -static
+	$(cc) -o $@ $^ $(LIB_PATH) $(LD_FLAGS) -lncurses
+
 %.o:$(SERVER)/%.cpp 
-	$(cc) -c $<  $(INCLUDE)      
-#%类似通配符,把依赖关系中的cc分别编译
+	$(cc) -c $< $(INCLUDE)      
 %.o:$(CLIENT)/%.cpp
-	$(cc) -c $<  $(INCLUDE)      
+	$(cc) -c $< $(INCLUDE)      
 %.o:$(DATAPOOL)/%.cpp
-	$(cc) -c $<       
+	$(cc) -c $< $(INCLUDE)     
 %.o:$(COMM)/%.cpp 
 	$(cc) -c $< $(INCLUDE) 
 %.o:$(WINDOW)/%.cpp 
