@@ -39,6 +39,7 @@ static void DelUser(std::string &f)
   {
     if(*it == f){
       online.erase(it);
+      break;
     }
   }
 }
