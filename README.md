@@ -1,4 +1,4 @@
-# SmallProject
+# Small_Project
 
 学习C语言和数据结构时自己写的一些小项目，每个小项目在我的CSDN博客上都有详细的介绍，下面是链接：
 
